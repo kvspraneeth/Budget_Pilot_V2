@@ -96,7 +96,7 @@ This repo includes `netlify.toml` for automatic Netlify publish settings:
 - publish directory: `dist`
 - redirect all routes to `index.html`
 
-> Live app: [https://budget-pilot-v2.netlify.app](https://budget-pilot-v2.netlify.app)
+> Live app: [https://expensetrackerv2.netlify.app/](https://expensetrackerv2.netlify.app/)
 
 ---
 
