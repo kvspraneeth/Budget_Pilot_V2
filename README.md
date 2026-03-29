@@ -32,7 +32,7 @@ Budget Pilot V2 is a modern personal finance dashboard built as a full-stack web
 - **Settings + personalization** for currency, theme, and data controls
 - **PWA-ready** with manifest and service worker support
 
-![Finance Dashboard](https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1400&q=80)
+![Finance Dashboard](bp_2.png)
 
 ---
 
