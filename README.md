@@ -19,7 +19,7 @@ Budget Pilot V2 is a modern personal finance dashboard built as a full-stack web
 - Offline-capable PWA support + local storage powered by Dexie
 - Server-ready architecture with Express, Drizzle ORM, Passport auth, and PostgreSQL-ready storage
 
-> Live demo: [https://budget-pilot-v2.netlify.app](https://budget-pilot-v2.netlify.app)
+> Live demo: [Click Here!](https://expensetrackerv2.netlify.app/)
 
 ---
 
