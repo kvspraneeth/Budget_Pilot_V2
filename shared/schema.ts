@@ -1,84 +1,92 @@
 import { z } from 'zod';
-import { parseISO, format } from 'date-fns';
+import { pgTable, text, serial, timestamp, boolean, real, varchar } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 
 // ============================================================================
-// Expense Schema
+// Drizzle Cloud Database Tables
 // ============================================================================
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  googleId: text("google_id").unique().notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  displayName: varchar("display_name", { length: 255 }),
+  avatarUrl: text("avatar_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const expenses = pgTable("expenses", {
+  id: text("id").primaryKey(), // Using client-generated UUIDs from Dexie
+  userId: text("user_id").notNull(),
+  amount: real("amount").notNull(),
+  date: text("date").notNull(),
+  time: text("time").notNull(),
+  category: text("category").notNull(),
+  items: text("items"),
+  where: text("where"),
+  note: text("note"),
+  paymentMethod: text("payment_method").notNull(),
+  account: text("account").notNull(),
+  isRecurring: boolean("is_recurring").default(false),
+  isTemplate: boolean("is_template").default(false),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const categories = pgTable("categories", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull(),
+  color: text("color").notNull(),
+  isDefault: boolean("is_default").default(false),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const budgets = pgTable("budgets", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  name: text("name").notNull(),
+  amount: real("amount").notNull(),
+  category: text("category").notNull(),
+  period: text("period").notNull(),
+  startDate: text("start_date").notNull(),
+  isActive: boolean("is_active").default(true),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const settings = pgTable("settings", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  currency: text("currency").notNull(),
+  theme: text("theme").notNull(),
+  language: text("language").notNull(),
+  notifications: boolean("notifications").default(true),
+  budgetAlerts: boolean("budget_alerts").default(true),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// ============================================================================
+// Types & Zod Schemas (Kept compatible with your frontend)
+// ============================================================================
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
 
 export const expenseFormSchema = z.object({
   id: z.string().optional(),
-  amount: z.coerce
-    .number({ invalid_type_error: 'Amount must be a number' })
-    .positive('Amount must be positive'),
-  date: z.string().min(1, 'Date is required'), // store as ISO string
+  amount: z.coerce.number().positive('Amount must be positive'),
+  date: z.string().min(1, 'Date is required'),
   time: z.string().min(1, 'Time is required'),
   category: z.string().min(1, 'Category is required'),
   items: z.string().optional(),
   where: z.string().optional(),
   note: z.string().optional(),
   paymentMethod: z.enum(['UPI', 'Cash', 'Card', 'Other']),
-  account: z.enum(['ICICI', 'HDFC', 'SBI', 'Other'], { required_error: 'Account is required' }),
+  account: z.enum(['ICICI', 'HDFC', 'SBI', 'Other']),
   isRecurring: z.boolean().default(false),
   isTemplate: z.boolean().default(false),
   attachments: z.array(z.string()).optional(),
 });
 
-export type Expense = z.infer<typeof expenseFormSchema> & {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type InsertExpense = z.infer<typeof expenseFormSchema>;
-
-// ============================================================================
-// Budget Schema
-// ============================================================================
-
-export const insertBudgetSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  amount: z.coerce.number().positive('Amount must be positive'),
-  category: z.string().min(1, 'Category is required'),
-  period: z.enum(['weekly', 'monthly', 'yearly']),
-  startDate: z.string(), // ISO string
-  isActive: z.boolean().default(true),
-});
-
-export type Budget = z.infer<typeof insertBudgetSchema> & {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type InsertBudget = z.infer<typeof insertBudgetSchema>;
-
-// ============================================================================
-// Category Schema
-// ============================================================================
-
-export const categorySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  icon: z.string(),
-  color: z.string(),
-  isDefault: z.boolean().optional(),
-});
-
-export type Category = z.infer<typeof categorySchema>;
-export type InsertCategory = Omit<Category, 'id'>;
-
-// ============================================================================
-// Settings Schema
-// ============================================================================
-
-export const settingsSchema = z.object({
-  id: z.string(),
-  currency: z.enum(['₹', '$', '€', '£']),
-  theme: z.enum(['light', 'dark']),
-  language: z.enum(['en']),
-  notifications: z.boolean(),
-  budgetAlerts: z.boolean(),
-});
-
-export type Settings = z.infer<typeof settingsSchema>;
-export type InsertSettings = z.infer<typeof settingsSchema>;
+export type Expense = z.infer<typeof expenseFormSchema> & { id: string; createdAt: string; updatedAt: string };
