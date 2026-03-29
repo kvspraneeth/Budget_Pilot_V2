@@ -1,6 +1,6 @@
 # Budget Pilot V2
 
-![Budget Pilot Hero](https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80)
+![Budget Pilot Hero](Budget_pilot_thumbnail.png)
 
 [![Live Demo](https://img.shields.io/badge/Netlify-Live%20Demo-brightgreen?style=flat&logo=netlify&logoColor=white)](https://budget-pilot-v2.netlify.app)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat&logo=react&logoColor=white)](https://reactjs.org)
